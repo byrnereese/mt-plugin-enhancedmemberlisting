@@ -1,0 +1,192 @@
+<mt:setvar name="page_title" value="Manage Users">
+
+<mt:setvarblock name="html_head" append="1">
+  <script type="text/javascript">
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function enableFilterButton() {
+        getByID("filter-button").style.display = "inline";
+    }
+    function toggleFilter() {
+        var filterActive = getByID("filter-active");
+        if (filterActive.style.display == "none") {
+            filterActive.style.display = "block";
+            getByID("filter-select").style.display = "none";
+        } else {
+            filterActive.style.display = "none";
+            getByID("filter-select").style.display = "block";
+        }
+    }
+
+    function setFilterCol(choice) {
+        var sel = getByID('filter-select');
+        if (!sel) return;
+        sel.className = "filter-" + choice;
+        if (choice == 'none')
+            getByID('filter-mode').selectedIndex = 0;
+        else {
+            getByID('filter-mode').selectedIndex = 1;
+            var fld = getByID('filter-col');
+            if (choice == 'status')
+                fld.selectedIndex = 0;
+            else if (choice == 'commenter')
+                fld.selectedIndex = 1;
+            col_span = getByID("filter-text-col");
+            if (fld.selectedIndex > -1 && col_span)
+                col_span.innerHTML = '<strong>' +
+                    fld.options[fld.selectedIndex].text + '</strong>';
+        }
+    }
+
+    var tableSelect;
+    function init() {
+        // setup
+        tableSelect = new TC.TableSelect( "author-listing-table" );
+        tableSelect.rowSelect = true;
+        setFilterCol(<mt:if name="filter">'<mt:var name="filter" escape="js">'<mt:else>'none'</mt:if>);<mt:if name="filter">
+        setFilterVal('<mt:var name="filter_val" escape="js">');
+    </mt:if>
+    }
+
+    TC.attachLoadEvent( init );
+    /* ]]> */
+  </script>
+  <link rel="stylesheet" href="<mt:StaticWebPath>plugins/EnhancedMemberListing/app.css" type="text/css">
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+    <mt:if name="is_administrator">
+    <a href="javascript:void(0)"
+        onclick="setObjectStatus(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 1); return false;"
+        accesskey="e"
+        title="<__trans phrase="Enable selected users (e)">"
+        ><__trans phrase="_USER_ENABLE" escape="js"></a>
+    <a href="javascript:void(0)"
+        onclick="var sysadmin = getByID('sysadmin'); if (sysadmin && sysadmin.checked) { alert('<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">'); sysadmin.click(); return false; } setObjectStatus(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 0); return false;"
+        accesskey="d"
+        title="<__trans phrase="Disable selected users (d)">"
+        ><__trans phrase="_USER_DISABLE" escape="js"></a>
+    </mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="system_msg">
+    <mt:if name="deleted">
+        <mtapp:statusmsg
+            id="saved_deleted"
+            class="success">The selected jobs were deleted.
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="priority">
+        <mtapp:statusmsg
+            id="saved_priority"
+            class="success">The selected jobs had their priority set to <mt:var name="priority">.
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="quickfilters"
+        label="<__trans phrase="Quickfilters">">
+        <$mtapp:listfilters$>
+    </mtapp:widget>
+    <$mtapp:pageactions from="list_authors"$>
+</mt:setvarblock>
+
+<mt:setvarblock name="html_body_footer">
+   <mt:include name="include/display_options.tmpl">
+</mt:setvarblock>
+
+<mt:setvarblock name="list_filter_form">
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
+            <div class="filter">
+                <div id="filter-title">
+                <mt:if name="filter_label">
+                    <__trans phrase="Showing only: [_1]" params="<$mt:var name="filter_label"$>">
+                    <a href="<mt:var name="script_url">?__mode=list_authors<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Remove filter"> ]</a>
+                <mt:else>
+                    <__trans phrase="Showing All Users">
+                </mt:if>
+                </div>
+            </div>
+        </div>
+    </div>
+</mt:setvarblock>
+
+<mt:include name="include/header.tmpl">
+<$mt:var name="list_filter_form"$>
+<mtapp:listing type="author" 
+    default="No users could be found." 
+    empty_message="No users could be found.">
+
+    <mt:if name="__first__">
+      <thead>
+        <tr>
+          <th class="cb"><input type="checkbox" id="select-all-checkbox"  
+            name="id-head" value="all" class="select" /></th>
+          <th>Pic</th>
+          <th>User Info</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th class="count"><img src="<mt:StaticWebPath>plugins/EnhancedMemberListing/images/page_edit.png" /></th>
+          <th class="count"><img src="<mt:StaticWebPath>plugins/EnhancedMemberListing/images/comments.png" /></th>
+          <th class="count"><img src="<mt:StaticWebPath>plugins/EnhancedMemberListing/images/heart.png" /></th>
+        </tr>
+      </thead>
+      <tbody>
+    </mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if> <mt:if name="status_enabled">status-enabled<mt:else><mt:if name="status_pending">status-pending<mt:else>status-disabled</mt:if></mt:if> role-<mt:var name="user_role_lc">">
+      <td class="cb">
+        <input type="checkbox" name="id" 
+           value="<mt:var name="id">" class="select" />
+      </td>
+      <td class="user-thumb">
+        <mt:if name="userpic">
+          <img src="<mt:var name="userpic">" width="50" height="50" />
+        <mt:else>
+          <img src="http://www.gravatar.com/avatar.php?gravatar_id=<mt:var name="user_email_md5">&rating=R&size=50&default=<mt:StaticWebPath>images/default-userpic-50.jpg">
+          <mt:ignore><img src="<mt:StaticWebPath>images/default-userpic-50.jpg" width="50" height="50" /></mt:ignore>
+        </mt:if>
+      </td>
+      <td class="user-meta">
+        <mt:if name="auth_icon_url">
+          <img src="<mt:var name="auth_icon_url">" height="10" width="10" />
+        </mt:if>
+        <span class="user-name">
+          <a href="?__mode=view&_type=author&id=<mt:var name="user_id">"><mt:var name="user_name" remove_html="1"></a>
+        </span>
+        <mt:if name="user_username">
+        <span class="user-username">(<mt:var name="user_username">)</span>
+        </mt:if>
+        <br />
+        <span class="user-links">
+          Registered on <mt:var name="created_on">
+          <mt:if name="user_email">| <a href="<mt:var name="user_email">">Email</a></mt:if>
+          <mt:if name="user_website">| <a href="<mt:var name="user_website">">Website</a></mt:if>
+        </span>
+      </td>
+      <td class="user-role">
+        <mt:var name="user_role" remove_html="1">
+      </td>
+      <td class="user-status">
+        <mt:if name="status_trusted">
+          <img src="<mt:StaticWebPath>images/status_icons/trusted.gif" /> Trusted
+        <mt:else name="status_banned">
+          <img src="<mt:StaticWebPath>images/status_icons/banned.gif" /> Banned
+        <mt:else name="status_disabled">
+          <img src="<mt:StaticWebPath>images/status_icons/user-disabled.gif" /> Disabled
+        <mt:else name="status_pending">
+          <img src="<mt:StaticWebPath>images/status_icons/user-pending.gif" /> Pending
+        <mt:else>
+          <img src="<mt:StaticWebPath>images/status_icons/user-enabled.gif" /> Enabled
+        </mt:if>
+      </td>
+      <td class="count user-entry-count"><mt:var name="user_entry_count"></td>
+      <td class="count user-comment-count"><mt:var name="user_comment_count"></td>
+      <td class="count user-comment-count"><mt:var name="user_favorite_count"></td>
+    </tr>
+
+</mtapp:listing>
+
+<mt:include name="include/footer.tmpl">

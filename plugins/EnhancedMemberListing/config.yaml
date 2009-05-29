@@ -1,0 +1,12 @@
+id: EnhancedMemberListing
+name: Enhanced Member Listing
+description: Provides an enhanced user interface and capabilities to Movable Type's default user management capabiities.
+version: 0.9
+
+applications:
+  cms:
+    menus:
+      manage:blog_user: 
+        mode: EnhancedMemberListing.list
+    methods:
+      EnhancedMemberListing.list: $EnhancedMemberListing::EnhancedMemberListing::Plugin::list

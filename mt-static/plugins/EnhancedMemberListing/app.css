@@ -1,0 +1,19 @@
+.user-name {
+  font-size: 1.1em;
+}
+.user-links {
+  font-size: .9em;
+  color: #666;
+}
+.user-username {
+  font-size: .9em;
+}
+td.user-status { white-space: nowrap; }
+
+tr.role-various td.user-role { font-style: italic; }
+
+#author-listing-table td { 
+  vertical-align: middle;
+}
+#author-listing-table th.count,
+#author-listing-table td.count { text-align: center; }
